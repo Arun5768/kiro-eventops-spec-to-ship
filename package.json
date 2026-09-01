@@ -1,0 +1,12 @@
+{
+  "name": "kiro-eventops-spec-to-ship",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test",
+    "validate": "node scripts/validate.mjs"
+  }
+}
+

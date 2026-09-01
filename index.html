@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A transparent, privacy-safe event application triage workflow built as a Kiro Spec-to-Ship proof project."
+    />
+    <title>EventOps Triage Lab</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#application-queue">Skip to application queue</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="EventOps Triage Lab home">
+        <span class="brand-mark">E/O</span>
+        <span>
+          <strong>EVENT/OPS</strong>
+          <small>SPEC → SHIP LAB</small>
+        </span>
+      </a>
+      <div class="header-meta">
+        <span class="status-dot" aria-hidden="true"></span>
+        LOCAL-ONLY DEMO
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">A KIRO BUILD SYSTEM / PROOF 01</p>
+          <h1 id="hero-title">Every shortlist<br />deserves a <em>receipt.</em></h1>
+          <p class="hero-summary">
+            Event selection without the mystery box. Every score explains itself,
+            every human override stays visible, and every record is synthetic.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#application-queue">Review the queue ↓</a>
+            <button class="button button-secondary" id="export-button" type="button">
+              Export evidence JSON
+            </button>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="Project operating principles">
+          <div class="panel-label">DECISION TRACE / LIVE</div>
+          <div class="decision-orbit" aria-hidden="true">
+            <span class="orbit orbit-one"></span>
+            <span class="orbit orbit-two"></span>
+            <span class="orbit-core">H</span>
+            <span class="orbit-node node-machine">MACHINE</span>
+            <span class="orbit-node node-human">HUMAN</span>
+          </div>
+          <p>The model recommends.<br /><strong>The organizer owns the decision.</strong></p>
+          <div class="rule-line"><span>RULESET</span><strong>eventops-demo-v1</strong></div>
+          <div class="rule-line"><span>DATA LEAVING BROWSER</span><strong>0 BYTES</strong></div>
+          <div class="rule-line"><span>VIBES-ONLY DECISIONS</span><strong>BLOCKED</strong></div>
+        </aside>
+      </section>
+
+      <section class="metric-grid" aria-label="Application summary">
+        <article class="metric-card">
+          <span>01 / QUEUE</span>
+          <strong id="metric-total">0</strong>
+          <p>synthetic applications</p>
+        </article>
+        <article class="metric-card metric-accent">
+          <span>02 / INVITE</span>
+          <strong id="metric-invite">0</strong>
+          <p>final invite decisions</p>
+        </article>
+        <article class="metric-card">
+          <span>03 / REVIEW</span>
+          <strong id="metric-review">0</strong>
+          <p>needs human attention</p>
+        </article>
+        <article class="metric-card">
+          <span>04 / AVG SCORE</span>
+          <strong id="metric-average">0</strong>
+          <p>explainable rule points</p>
+        </article>
+      </section>
+
+      <section class="workspace" id="application-queue" aria-labelledby="queue-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">02 / THE REVIEW DESK</p>
+            <h2 id="queue-title">Decision queue</h2>
+          </div>
+          <p>
+            Recommendation is the machine's view. Final decision is the organizer's view.
+            Keeping both visible is the point.
+          </p>
+        </div>
+
+        <div class="toolbar" aria-label="Queue controls">
+          <label class="search-control">
+            <span>Search</span>
+            <input id="search-input" type="search" placeholder="Name, role, or city" />
+          </label>
+          <div class="filter-group" aria-label="Filter by final decision">
+            <button class="filter-button is-active" type="button" data-filter="All">All</button>
+            <button class="filter-button" type="button" data-filter="Invite">Invite</button>
+            <button class="filter-button" type="button" data-filter="Review">Review</button>
+            <button class="filter-button" type="button" data-filter="Waitlist">Waitlist</button>
+          </div>
+          <p class="visible-count" id="visible-count">0 visible</p>
+        </div>
+
+        <div class="application-grid" id="application-grid"></div>
+        <div class="empty-state" id="empty-state" hidden>
+          <strong>No applications match this filter.</strong>
+          <p>The queue is not empty. Your filter is simply feeling powerful.</p>
+          <button class="button button-secondary" id="reset-filters" type="button">Reset filters</button>
+        </div>
+      </section>
+
+      <section class="intake-section" aria-labelledby="intake-title">
+        <div class="intake-copy">
+          <p class="eyebrow">03 / TRY THE WORKFLOW</p>
+          <h2 id="intake-title">Add one synthetic application.</h2>
+          <p>
+            Use fictional information only. This browser-only demo stores additions in local storage
+            and sends nothing to a server.
+          </p>
+          <div class="privacy-note">
+            <strong>DATA BOUNDARY</strong>
+            No patient, client, financial, confidential partner, or real applicant information.
+          </div>
+          <button class="text-button" id="reset-data" type="button">Reset all demo data ↺</button>
+        </div>
+
+        <form class="intake-form" id="intake-form">
+          <div class="field-row">
+            <label>
+              <span>Fictional name</span>
+              <input name="name" required autocomplete="off" placeholder="e.g. Tara Demo" />
+            </label>
+            <label>
+              <span>Role</span>
+              <input name="role" required autocomplete="off" placeholder="e.g. JavaScript developer" />
+            </label>
+          </div>
+          <div class="field-row field-row-three">
+            <label>
+              <span>City</span>
+              <input name="city" required autocomplete="off" placeholder="e.g. Bhopal" />
+            </label>
+            <label>
+              <span>Experience</span>
+              <select name="experience">
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+              </select>
+            </label>
+            <label>
+              <span>Available hours</span>
+              <input name="availableHours" required type="number" min="1" max="24" value="4" />
+            </label>
+          </div>
+          <label>
+            <span>Motivation</span>
+            <textarea
+              name="motivation"
+              required
+              rows="5"
+              placeholder="What should this fictional applicant build or learn?"
+            ></textarea>
+          </label>
+          <label>
+            <span>Proof URL <small>(optional)</small></span>
+            <input name="proofUrl" type="url" placeholder="https://example.com/demo-project" />
+          </label>
+          <label class="checkbox-label">
+            <input name="buildCommitment" type="checkbox" />
+            <span>Applicant commits to build and demo a working artifact.</span>
+          </label>
+          <button class="button button-primary submit-button" type="submit">Score synthetic application →</button>
+        </form>
+      </section>
+
+      <section class="spec-strip" aria-labelledby="spec-title">
+        <p class="eyebrow">04 / THE BUILD RECEIPT</p>
+        <h2 id="spec-title">The interface is the ending.<br />The evidence is the story.</h2>
+        <div class="spec-grid">
+          <article><span>01</span><h3>Requirements</h3><p>User stories, acceptance criteria, non-goals, and success measures.</p></article>
+          <article><span>02</span><h3>Design</h3><p>Rules, architecture, data boundaries, failure handling, and verification.</p></article>
+          <article><span>03</span><h3>Tasks</h3><p>Small implementation slices with an honest completion record.</p></article>
+          <article><span>04</span><h3>Kiro Power</h3><p>Reusable EventOps guidance for turning community problems into evidence.</p></article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Built for The Origin Guild · Central India</p>
+      <p>All demo identities are synthetic. Actual humans remain wonderfully more complicated.</p>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.mjs"></script>
+  </body>
+</html>
