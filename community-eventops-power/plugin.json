@@ -1,0 +1,25 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "community-eventops",
+  "version": "1.0.0",
+  "description": "Turn community event operations problems into transparent specifications, measurable workflows, and privacy-safe evidence.",
+  "author": {
+    "name": "Arun Pratap Singh Chandel",
+    "url": "https://arun-chandel-portfolio.pages.dev/"
+  },
+  "keywords": [
+    "community",
+    "eventops",
+    "event operations",
+    "meetup",
+    "hackathon",
+    "applications",
+    "check-in",
+    "evidence",
+    "workshop",
+    "spec-to-ship"
+  ],
+  "homepage": "https://arun-chandel-portfolio.pages.dev/",
+  "license": "MIT"
+}
+
