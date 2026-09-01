@@ -1,0 +1,18 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Verify EventOps JavaScript",
+      "description": "Run unit and integrity checks after JavaScript changes.",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(js|mjs)$",
+      "action": {
+        "type": "command",
+        "command": "node --test && node scripts/validate.mjs"
+      },
+      "timeout": 60,
+      "enabled": true
+    }
+  ]
+}
+
