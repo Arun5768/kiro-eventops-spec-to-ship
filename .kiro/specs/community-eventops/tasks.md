@@ -19,6 +19,7 @@
 - [x] Add decision filters and text search.
 - [x] Add manual decision controls.
 - [x] Add a responsive, accessible presentation.
+- [x] Add live decision summary ARIA region (R8): `computeFilterSummary` pure function in `src/scoring.mjs`, visually-hidden `#queue-summary` live region in `index.html`, `.sr-only` utility in `styles.css`, debounced wiring in `src/app.mjs`.
 
 ## 4. Local intake and evidence
 
@@ -36,7 +37,7 @@
 ## 6. Verification
 
 - [x] Add unit tests for score boundaries and missing data.
+- [x] Add unit tests for `computeFilterSummary` boundary cases (11 cases in `tests/summary.test.mjs`).
 - [x] Add an integrity validation script.
-- [ ] Run the project through Kiro IDE or CLI and record the session outcome.
-- [ ] Publish the repository and add its link to the ambassador application.
-
+- [x] Run the project through Kiro CLI and record the session outcome in `docs/kiro-run-notes.md`.
+- [x] Publish the repository and add its live demo link to `README.md`.

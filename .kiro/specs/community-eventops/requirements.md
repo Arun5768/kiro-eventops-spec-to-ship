@@ -86,6 +86,19 @@ Acceptance criteria:
 3. Keyboard focus is visible.
 4. Status changes are announced through an ARIA live region.
 
+### R8 — Live decision summary for screen-reader users
+
+As an organizer using a screen reader, I want a concise, continuously updated summary of the current queue state so I can know how many applications are visible, what filter is active, and how decisions are distributed — without being interrupted by an announcement on every keystroke.
+
+Acceptance criteria:
+
+1. A visually-hidden ARIA live region with `role="status"` and `aria-live="polite"` reports the active filter, visible count, Invite/Review/Waitlist counts, and manual override count after the view settles.
+2. The summary text is debounced so rapid filter or search changes produce at most one announcement after the user pauses, not one per keystroke.
+3. When no applications match the active filter, the region announces the no-match state and the total queue size.
+4. When the queue is empty, the region announces "Queue is empty."
+5. The live region is never the only way to obtain this information; the same data is visible to sighted users in the metric cards and visible-count label.
+6. The summary logic is a pure function with no DOM access, independently testable.
+
 ## Non-goals
 
 - Production admissions, hiring, credit, healthcare, or other high-impact decisions

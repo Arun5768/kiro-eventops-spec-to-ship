@@ -140,3 +140,50 @@ export function summarizeApplications(applications = []) {
   };
 }
 
+/**
+ * Returns a concise, screen-reader-friendly summary of the current queue view.
+ * Pure function: no DOM access, no side effects.
+ *
+ * @param {object} params
+ * @param {number} params.visibleCount   - Number of applications currently shown.
+ * @param {number} params.totalCount     - Total applications in the queue.
+ * @param {string} params.activeFilter   - The active decision filter ("All", "Invite", "Review", "Waitlist").
+ * @param {object} params.decisions      - Counts keyed by decision label.
+ * @param {number} params.overrides      - Number of manual override decisions.
+ * @returns {string} A plain-text announcement suitable for an ARIA live region.
+ */
+export function computeFilterSummary({ visibleCount, totalCount, activeFilter, decisions, overrides }) {
+  const safeVisible = Number.isFinite(visibleCount) && visibleCount >= 0 ? visibleCount : 0;
+  const safeTotal = Number.isFinite(totalCount) && totalCount >= 0 ? totalCount : 0;
+  const filter = typeof activeFilter === "string" && activeFilter.trim() ? activeFilter.trim() : "All";
+  const safeDecisions = decisions && typeof decisions === "object" ? decisions : {};
+  const safeOverrides = Number.isFinite(overrides) && overrides >= 0 ? overrides : 0;
+
+  const invite = safeDecisions.Invite ?? 0;
+  const review = safeDecisions.Review ?? 0;
+  const waitlist = safeDecisions.Waitlist ?? 0;
+
+  const filterLabel = filter === "All" ? "all decisions" : `filter: ${filter}`;
+  const visibleLabel = safeVisible === 1 ? "1 application" : `${safeVisible} applications`;
+  const overrideLabel =
+    safeOverrides === 0
+      ? "no manual overrides"
+      : safeOverrides === 1
+        ? "1 manual override"
+        : `${safeOverrides} manual overrides`;
+
+  if (safeTotal === 0) {
+    return "Queue is empty.";
+  }
+
+  if (safeVisible === 0) {
+    return `No applications match ${filterLabel}. Queue total: ${safeTotal}.`;
+  }
+
+  return (
+    `Showing ${visibleLabel} for ${filterLabel}. ` +
+    `Queue: ${invite} invite, ${review} review, ${waitlist} waitlist. ` +
+    `${overrideLabel}.`
+  );
+}
+

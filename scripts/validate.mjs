@@ -9,6 +9,7 @@ const requiredFiles = [
   "src/scoring.mjs",
   "src/data.mjs",
   "tests/scoring.test.mjs",
+  "tests/summary.test.mjs",
   ".kiro/specs/community-eventops/requirements.md",
   ".kiro/specs/community-eventops/design.md",
   ".kiro/specs/community-eventops/tasks.md",
@@ -41,13 +42,14 @@ for (const field of ["$schema", "name", "version", "description", "author", "key
 }
 
 const requirements = await readFile(join(root, ".kiro/specs/community-eventops/requirements.md"), "utf8");
-for (const marker of ["## User stories", "Acceptance criteria", "## Non-goals", "## Success measures"]) {
+for (const marker of ["## User stories", "Acceptance criteria", "## Non-goals", "## Success measures", "R8"]) {
   if (!requirements.includes(marker)) failures.push(`Requirements are missing: ${marker}`);
 }
 
 const html = await readFile(join(root, "index.html"), "utf8");
 if (!html.toLowerCase().includes("synthetic")) failures.push("The interface must label synthetic data.");
 if (!html.includes('aria-live="polite"')) failures.push("The interface needs an ARIA live status region.");
+if (!html.includes('id="queue-summary"')) failures.push("The interface is missing the #queue-summary live region (R8).");
 
 if (failures.length) {
   console.error("Validation failed:\n" + failures.map((failure) => `- ${failure}`).join("\n"));

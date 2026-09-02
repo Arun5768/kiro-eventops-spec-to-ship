@@ -19,6 +19,7 @@ The project turns a fuzzy community-operations problem into inspectable artifact
 - Separates `Invite`, `Review`, and `Waitlist` decisions
 - Shows the exact reasons behind every score
 - Allows manual decisions without hiding the automated recommendation
+- Gives screen-reader users a debounced live summary of the active queue view
 - Adds synthetic applications locally and never sends them to a server
 - Exports an evidence snapshot as JSON
 
@@ -42,6 +43,12 @@ Connect this repository to Cloudflare Pages with no framework preset, no build c
 node --test
 node scripts/validate.mjs
 ```
+
+Current result: **17 tests passed** and **16 project artifacts verified**.
+
+## Kiro workflow evidence
+
+The accessibility iteration was completed in an authenticated Kiro CLI session after it read the project's steering and spec files. The requirement, design decision, task, implementation, tests, browser check, strength, and observed friction are recorded in [`docs/kiro-run-notes.md`](docs/kiro-run-notes.md).
 
 ## Data boundary
 

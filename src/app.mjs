@@ -1,5 +1,5 @@
 import { seedApplications } from "./data.mjs";
-import { RULE_VERSION, summarizeApplications } from "./scoring.mjs";
+import { RULE_VERSION, summarizeApplications, computeFilterSummary } from "./scoring.mjs";
 
 const storageKey = "eventops-demo-applications-v1";
 const decisionOptions = ["Invite", "Review", "Waitlist"];
@@ -15,6 +15,7 @@ const elements = {
   resetData: document.querySelector("#reset-data"),
   exportButton: document.querySelector("#export-button"),
   toast: document.querySelector("#toast"),
+  queueSummary: document.querySelector("#queue-summary"),
   metrics: {
     total: document.querySelector("#metric-total"),
     invite: document.querySelector("#metric-invite"),
@@ -121,6 +122,8 @@ function render() {
   elements.grid.innerHTML = visible.map(applicationCard).join("");
   elements.empty.hidden = visible.length !== 0;
 
+  debouncedUpdateQueueSummary(visible.length, summary.metrics);
+
   document.querySelectorAll("[data-decision-id]").forEach((select) => {
     select.addEventListener("change", handleDecisionChange);
   });
@@ -205,6 +208,40 @@ function showToast(message) {
   elements.toast.classList.add("is-visible");
   toastTimer = setTimeout(() => elements.toast.classList.remove("is-visible"), 3200);
 }
+
+// Debounce helper: delays fn by ms after the last call, preventing rapid-fire
+// announcements to screen readers while the user types in the search box.
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
+// Write the queue summary into the ARIA live region.
+// Called through a debounced wrapper so keystrokes don't produce a new
+// announcement on every character — only after typing pauses.
+function updateQueueSummary(visibleCount, metrics) {
+  const text = computeFilterSummary({
+    visibleCount,
+    totalCount: metrics.total,
+    activeFilter: state.filter,
+    decisions: metrics.decisions,
+    overrides: metrics.overrides,
+  });
+
+  // Clear then set in the same microtask so AT always sees a fresh update,
+  // even when the text is identical (e.g., resetting to the same filter).
+  elements.queueSummary.textContent = "";
+  // A brief setTimeout lets the DOM register the empty state before the new
+  // content is inserted, which improves re-announcement in some screen readers.
+  setTimeout(() => {
+    elements.queueSummary.textContent = text;
+  }, 0);
+}
+
+const debouncedUpdateQueueSummary = debounce(updateQueueSummary, 400);
 
 elements.search.addEventListener("input", (event) => {
   state.search = event.currentTarget.value.trim();

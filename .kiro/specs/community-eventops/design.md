@@ -94,10 +94,12 @@ Evaluated records add:
 - Visible `:focus-visible` styles
 - `aria-live="polite"` for result and export messages
 - Color is paired with text labels
+- **Live decision summary** (`#queue-summary`): a visually-hidden `role="status" aria-live="polite" aria-atomic="true"` region that announces the current filter, visible count, Invite/Review/Waitlist breakdown, and manual override count after the user pauses interaction. Implemented as `computeFilterSummary()` in `src/scoring.mjs` (pure, DOM-free) and called through a 400 ms debounce in `src/app.mjs` to prevent per-keystroke announcement noise. The `.sr-only` CSS utility hides the region visually while keeping it accessible.
 
 ## Verification
 
 - Unit tests exercise scoring thresholds, score caps, missing fields, and manual overrides.
+- Unit tests cover `computeFilterSummary` boundary cases: empty queue, zero visible, singular/plural forms, null inputs, and non-finite values.
 - The validation script checks required files, JSON syntax, Power manifest fields, synthetic-data notice, and spec completeness.
 - Manual browser verification covers responsive layout, filters, form entry, override, and export.
 
