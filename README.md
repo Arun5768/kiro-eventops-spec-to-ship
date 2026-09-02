@@ -2,6 +2,8 @@
 
 An explainable, privacy-safe event application triage dashboard built as a Kiro **Spec-to-Ship** proof project.
 
+**Live demo:** https://kiro-eventops-spec-to-ship.pages.dev/
+
 The project turns a fuzzy community-operations problem into inspectable artifacts:
 
 - `.kiro/specs/community-eventops/requirements.md` — user stories and acceptance criteria
@@ -32,7 +34,7 @@ Open `http://localhost:4173`.
 
 ## Deploy to Cloudflare Pages
 
-Upload the static artifact containing `index.html`, `styles.css`, `_headers`, and `src/` to a Cloudflare Pages Direct Upload project. The public build needs no command and no server runtime.
+Connect this repository to Cloudflare Pages with no framework preset, no build command, and `/` as the output directory. The public build needs no server runtime.
 
 ## Verify
 
