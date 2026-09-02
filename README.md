@@ -82,6 +82,7 @@ The unit suite needs no database account. It checks seeding, search, community i
 ## Workshop-ready material
 
 - [`docs/mongodb-workshop-runbook.md`](docs/mongodb-workshop-runbook.md) — a 45-minute hands-on session
+- [`docs/mongodb-atlas-run.md`](docs/mongodb-atlas-run.md) — credential-free evidence from a real Atlas M0 run
 - [`.kiro/specs/mongodb-community-memory/requirements.md`](.kiro/specs/mongodb-community-memory/requirements.md) — user stories and acceptance criteria
 - [`.kiro/specs/mongodb-community-memory/design.md`](.kiro/specs/mongodb-community-memory/design.md) — collections, indexes, failure behavior, and privacy boundary
 - [`.kiro/specs/mongodb-community-memory/tasks.md`](.kiro/specs/mongodb-community-memory/tasks.md) — honest completion record
@@ -98,12 +99,13 @@ The repository began as an explainable event-application triage dashboard built 
 
 The current public Pages demo still shows the earlier browser-local build: https://kiro-eventops-spec-to-ship.pages.dev/
 
-## What remains before using this in the MUG application
+## Proof status
 
-- Connect a personal Atlas free-tier cluster.
-- Capture a real, credential-free run showing the three collections, indexes, aggregation response, and one Atlas Search result.
-- Deploy the Node server and add the MongoDB-backed URL here.
-- Run the workshop with a small pilot cohort and publish the retrospective.
+- [x] Connect a personal Atlas M0 free-tier cluster in AWS Mumbai.
+- [x] Seed the three collections and verify the aggregation and Atlas Search paths.
+- [x] Publish a credential-free run record in [`docs/mongodb-atlas-run.md`](docs/mongodb-atlas-run.md).
+- [ ] Deploy the Node server and add the MongoDB-backed URL here.
+- [ ] Run the workshop with a small pilot cohort and publish the retrospective.
 
 ## License and intent
 
