@@ -5,39 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="A transparent, privacy-safe event application triage workflow built as a Kiro Spec-to-Ship proof project."
+      content="A MongoDB-backed community operations lab for explainable event decisions, audit trails, aggregation insights, and searchable event memory."
     />
-    <title>EventOps Triage Lab</title>
+    <title>EventOps Community Memory</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#application-queue">Skip to application queue</a>
 
     <header class="site-header">
-      <a class="brand" href="#top" aria-label="EventOps Triage Lab home">
+      <a class="brand" href="#top" aria-label="EventOps Community Memory home">
         <span class="brand-mark">E/O</span>
         <span>
           <strong>EVENT/OPS</strong>
-          <small>SPEC → SHIP LAB</small>
+          <small>COMMUNITY MEMORY LAB</small>
         </span>
       </a>
-      <div class="header-meta">
+      <div class="header-meta" id="data-mode" aria-live="polite">
         <span class="status-dot" aria-hidden="true"></span>
-        LOCAL-ONLY DEMO
+        CHECKING DATA MODE
       </div>
     </header>
 
     <main id="top">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow">A KIRO BUILD SYSTEM / PROOF 01</p>
-          <h1 id="hero-title">Every shortlist<br />deserves a <em>receipt.</em></h1>
+          <p class="eyebrow">MONGODB COMMUNITY PROOF / CENTRAL INDIA</p>
+          <h1 id="hero-title">Every meetup<br />should leave a <em>memory.</em></h1>
           <p class="hero-summary">
-            Event selection without the mystery box. Every score explains itself,
-            every human override stays visible, and every record is synthetic.
+            A working community-operations lab where MongoDB stores event applications,
+            preserves decision history, aggregates regional signals, and retrieves lessons from past workshops.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#application-queue">Review the queue ↓</a>
+            <a class="button button-secondary" href="#community-memory">Search event memory</a>
             <button class="button button-secondary" id="export-button" type="button">
               Export evidence JSON
             </button>
@@ -45,7 +46,7 @@
         </div>
 
         <aside class="hero-panel" aria-label="Project operating principles">
-          <div class="panel-label">DECISION TRACE / LIVE</div>
+          <div class="panel-label">MONGODB DATA FLOW / LIVE</div>
           <div class="decision-orbit" aria-hidden="true">
             <span class="orbit orbit-one"></span>
             <span class="orbit orbit-two"></span>
@@ -53,10 +54,11 @@
             <span class="orbit-node node-machine">MACHINE</span>
             <span class="orbit-node node-human">HUMAN</span>
           </div>
-          <p>The model recommends.<br /><strong>The organizer owns the decision.</strong></p>
+          <p>The system recommends.<br /><strong>The organizer owns the decision.</strong></p>
           <div class="rule-line"><span>RULESET</span><strong>eventops-demo-v1</strong></div>
-          <div class="rule-line"><span>DATA LEAVING BROWSER</span><strong>0 BYTES</strong></div>
-          <div class="rule-line"><span>VIBES-ONLY DECISIONS</span><strong>BLOCKED</strong></div>
+          <div class="rule-line"><span>DATA CLASS</span><strong>SYNTHETIC ONLY</strong></div>
+          <div class="rule-line"><span>HUMAN OVERRIDES</span><strong>AUDITED</strong></div>
+          <div class="rule-line"><span>SEARCH</span><strong id="search-mode">DETECTING</strong></div>
         </aside>
       </section>
 
@@ -83,10 +85,32 @@
         </article>
       </section>
 
+      <section class="memory-section" id="community-memory" aria-labelledby="memory-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">02 / COMMUNITY MEMORY</p>
+            <h2 id="memory-title">Ask what previous events taught us.</h2>
+          </div>
+          <p>
+            Search synthetic workshop retrospectives across titles, summaries, takeaways, tags, and cities.
+            Atlas Search is used when configured; a MongoDB text-index fallback keeps the lab teachable locally.
+          </p>
+        </div>
+        <form class="memory-search" id="memory-form" role="search">
+          <label for="memory-query">Search lessons</label>
+          <div>
+            <input id="memory-query" name="query" type="search" placeholder="Try: audit trail, broken queries, or Indore" />
+            <button class="button button-primary" type="submit">Search memory →</button>
+          </div>
+        </form>
+        <p class="memory-meta" id="memory-meta">Loading synthetic event memories…</p>
+        <div class="memory-grid" id="memory-results"></div>
+      </section>
+
       <section class="workspace" id="application-queue" aria-labelledby="queue-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">02 / THE REVIEW DESK</p>
+            <p class="eyebrow">03 / THE REVIEW DESK</p>
             <h2 id="queue-title">Decision queue</h2>
           </div>
           <p>
@@ -119,11 +143,11 @@
 
       <section class="intake-section" aria-labelledby="intake-title">
         <div class="intake-copy">
-          <p class="eyebrow">03 / TRY THE WORKFLOW</p>
+          <p class="eyebrow">04 / TRY THE WORKFLOW</p>
           <h2 id="intake-title">Add one synthetic application.</h2>
           <p>
-            Use fictional information only. This browser-only demo stores additions in local storage
-            and sends nothing to a server.
+            Use fictional information only. When MongoDB is connected, the API validates and stores
+            synthetic records; otherwise the interface stays usable in local demo mode.
           </p>
           <div class="privacy-note">
             <strong>DATA BOUNDARY</strong>
@@ -183,20 +207,20 @@
       </section>
 
       <section class="spec-strip" aria-labelledby="spec-title">
-        <p class="eyebrow">04 / THE BUILD RECEIPT</p>
+        <p class="eyebrow">05 / THE BUILD RECEIPT</p>
         <h2 id="spec-title">The interface is the ending.<br />The evidence is the story.</h2>
         <div class="spec-grid">
           <article><span>01</span><h3>Requirements</h3><p>User stories, acceptance criteria, non-goals, and success measures.</p></article>
           <article><span>02</span><h3>Design</h3><p>Rules, architecture, data boundaries, failure handling, and verification.</p></article>
           <article><span>03</span><h3>Tasks</h3><p>Small implementation slices with an honest completion record.</p></article>
-          <article><span>04</span><h3>Kiro Power</h3><p>Reusable EventOps guidance for turning community problems into evidence.</p></article>
+          <article><span>04</span><h3>MongoDB</h3><p>CRUD, compound indexes, aggregation pipelines, Atlas Search, and an auditable decision history.</p></article>
         </div>
       </section>
     </main>
 
     <footer>
-      <p>Built for The Origin Guild · Central India</p>
-      <p>All demo identities are synthetic. Actual humans remain wonderfully more complicated.</p>
+      <p>Built for The Origin Guild · Central India · MongoDB community proof</p>
+      <p>All records are synthetic. Actual humans remain wonderfully more complicated.</p>
     </footer>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>

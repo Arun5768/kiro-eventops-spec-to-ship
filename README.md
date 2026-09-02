@@ -1,66 +1,110 @@
-# EventOps Triage Lab
+# EventOps Community Memory
 
-An explainable, privacy-safe event application triage dashboard built with Kiro's **Spec-to-Ship** workflow.
+A MongoDB-backed community-operations lab for explainable application triage, auditable human decisions, regional insights, and searchable lessons from past events.
 
-**Live demo:** https://kiro-eventops-spec-to-ship.pages.dev/
+The project extends the original Kiro EventOps proof into a practical MongoDB workshop asset for The Origin Guild and a proposed MongoDB User Group in Central India.
 
-The project turns a fuzzy community-operations problem into a reviewable implementation trail:
+> **Data boundary:** every included identity, application, and event memory is synthetic. Do not use this lab for real applicant, employer, patient, customer, or partner data.
 
-- `.kiro/specs/community-eventops/requirements.md` — user stories and acceptance criteria
-- `.kiro/specs/community-eventops/design.md` — architecture, data boundaries, and failure handling
-- `.kiro/specs/community-eventops/tasks.md` — implementation checklist and verification record
-- `.kiro/specs/announcement-coordination/requirements.md` — bugfix spec: competing live-region announcements
-- `.kiro/specs/announcement-coordination/design.md` — root-cause analysis and coordinator architecture
-- `.kiro/specs/announcement-coordination/tasks.md` — implementation checklist and verification record
-- `.kiro/steering/` — product, technology, and structure guidance for Kiro
-- `.kiro/hooks/verify-on-save.json` — automatic verification after JavaScript changes
-- `community-eventops-power/` — a reusable, skills-only Kiro Power
+## Why this is a MongoDB project
 
-## What the app does
+MongoDB is not a logo added to the interface. It owns four visible responsibilities:
 
-- Scores synthetic event applications with transparent, adjustable rules
-- Separates `Invite`, `Review`, and `Waitlist` decisions
-- Shows the exact reasons behind every score
-- Allows manual decisions without hiding the automated recommendation
-- Gives screen-reader users a debounced live summary of the active queue view, coordinated with action confirmations so only one polite announcement fires per user action
-- Adds synthetic applications locally and never sends them to a server
-- Exports an evidence snapshot as JSON
+1. **Document persistence** — event applications and retrospective memories are stored as flexible documents.
+2. **Decision receipts** — organizer overrides create append-only audit documents without erasing the original recommendation.
+3. **Community insights** — a `$facet` aggregation returns decision and city summaries in one pipeline.
+4. **Event-memory retrieval** — Atlas Search queries titles, summaries, takeaways, tags, and cities; a MongoDB text-index fallback keeps the lab runnable without an Atlas Search index.
 
-## Run locally
+The browser displays the active storage and search modes, so the demo cannot quietly imply that MongoDB is connected when it is not.
 
-No package installation is required.
+## Architecture
 
-```powershell
-node server.mjs
+```text
+Browser UI
+   │
+   ▼
+Node JSON API ── store interface ── MongoDB Atlas
+                              └── in-memory workshop fallback
+
+MongoDB collections
+├── applications
+├── decision_audit
+└── event_memories
 ```
 
-Open `http://localhost:4173`.
+## Run immediately
 
-## Deploy to Cloudflare Pages
+Requires Node.js 20.19 or newer.
 
-Connect this repository to Cloudflare Pages with no framework preset, no build command, and `/` as the output directory. The public build needs no server runtime.
+```powershell
+pnpm install
+pnpm start
+```
+
+Open `http://localhost:4173`. With no connection string, the API runs in clearly labelled in-memory mode using the same store contract as MongoDB.
+
+## Run with MongoDB Atlas
+
+1. Create a learning cluster and a least-privilege database user.
+2. Copy `.env.example` values into your shell or secret manager. Never commit the real URI.
+3. Create an Atlas Search index named `eventops_memory_search` on `event_memories` using [`mongodb/atlas-search-index.json`](mongodb/atlas-search-index.json).
+4. Seed and start:
+
+```powershell
+$env:MONGODB_URI="mongodb+srv://..."
+$env:MONGODB_DATABASE="eventops_community_memory"
+pnpm seed:mongo
+pnpm start
+```
+
+The application creates operational indexes at startup and idempotently seeds only synthetic records.
+
+## API evidence
+
+| Method | Endpoint | MongoDB concept |
+|---|---|---|
+| `GET` | `/api/status` | Connection and honest runtime-mode reporting |
+| `GET` | `/api/applications` | Filtered document query |
+| `POST` | `/api/applications` | Validated synthetic document insert |
+| `PATCH` | `/api/applications/:id/decision` | Application update plus append-only audit insert |
+| `GET` | `/api/insights` | `$facet`, `$group`, `$avg`, `$sum`, and `$sort` aggregation |
+| `GET` | `/api/memory/search?q=...` | Atlas Search with MongoDB `$text` fallback |
 
 ## Verify
 
 ```powershell
-node --test
-node scripts/validate.mjs
+pnpm test
+pnpm validate
 ```
 
-Current result: **29 tests passed** and **22 project artifacts verified**.
+The unit suite needs no database account. It checks seeding, search, community insights, decision auditing, invalid-decision handling, scoring, and accessible announcement coordination.
 
-## Kiro workflow evidence
+## Workshop-ready material
 
-The accessibility iteration was completed in an authenticated Kiro CLI session after it read the project's steering and spec files. The requirement, design decision, task, implementation, tests, browser check, strength, and observed friction are recorded in [`docs/kiro-run-notes.md`](docs/kiro-run-notes.md).
+- [`docs/mongodb-workshop-runbook.md`](docs/mongodb-workshop-runbook.md) — a 45-minute hands-on session
+- [`.kiro/specs/mongodb-community-memory/requirements.md`](.kiro/specs/mongodb-community-memory/requirements.md) — user stories and acceptance criteria
+- [`.kiro/specs/mongodb-community-memory/design.md`](.kiro/specs/mongodb-community-memory/design.md) — collections, indexes, failure behavior, and privacy boundary
+- [`.kiro/specs/mongodb-community-memory/tasks.md`](.kiro/specs/mongodb-community-memory/tasks.md) — honest completion record
 
-The competing-announcement bugfix (identified as friction in the first session) was then executed as a full spec-to-ship cycle: requirements, design, tasks, implementation, regression tests, and verification are in `.kiro/specs/announcement-coordination/` and [`docs/announcement-coordination-feedback.md`](docs/announcement-coordination-feedback.md).
+## Original Kiro proof
 
-Two concrete Kiro product observations from these sessions—including the CLI v3 permission-mode mismatch and a resumable rate-limit interruption—are recorded in [`docs/kiro-product-feedback.md`](docs/kiro-product-feedback.md).
+The repository began as an explainable event-application triage dashboard built through Kiro's Spec-to-Ship workflow. That evidence remains reviewable:
 
-## Data boundary
+- `.kiro/specs/community-eventops/` — first requirements, architecture, and implementation trail
+- `.kiro/specs/announcement-coordination/` — accessibility bugfix spec and regression evidence
+- `.kiro/steering/` and `.kiro/hooks/` — project guidance and verification automation
+- `community-eventops-power/` — reusable EventOps guidance
+- [`docs/kiro-run-notes.md`](docs/kiro-run-notes.md) and [`docs/kiro-product-feedback.md`](docs/kiro-product-feedback.md) — authenticated run notes and product observations
 
-All included names and applications are synthetic. The app stores changes only in the current browser's local storage. It is a workflow demonstration, not a production admissions or hiring system.
+The current public Pages demo still shows the earlier browser-local build: https://kiro-eventops-spec-to-ship.pages.dev/
 
-## Why Kiro was useful here
+## What remains before using this in the MUG application
 
-The requirements, architecture, constraints, implementation tasks, verification steps, and reusable project guidance remain visible in the repository. That makes the reasoning behind each decision easier for another maintainer to inspect and continue.
+- Connect a personal Atlas free-tier cluster.
+- Capture a real, credential-free run showing the three collections, indexes, aggregation response, and one Atlas Search result.
+- Deploy the Node server and add the MongoDB-backed URL here.
+- Run the workshop with a small pilot cohort and publish the retrospective.
+
+## License and intent
+
+This is an educational proof of work for community learning. The scoring rules are transparent demo rules, not a model for employment, admissions, credit, healthcare, or other consequential decisions.

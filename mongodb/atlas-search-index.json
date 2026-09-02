@@ -1,0 +1,16 @@
+{
+  "name": "eventops_memory_search",
+  "definition": {
+    "mappings": {
+      "dynamic": false,
+      "fields": {
+        "city": { "type": "string" },
+        "event": { "type": "string" },
+        "summary": { "type": "string" },
+        "tags": { "type": "string" },
+        "takeaways": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    }
+  }
+}

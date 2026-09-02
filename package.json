@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test",
-    "validate": "node scripts/validate.mjs"
+    "validate": "node scripts/validate.mjs",
+    "seed:mongo": "node scripts/seed-mongodb.mjs"
+  },
+  "dependencies": {
+    "mongodb": "7.6.0"
   }
 }
-

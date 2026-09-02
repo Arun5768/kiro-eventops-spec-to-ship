@@ -8,15 +8,26 @@ const requiredFiles = [
   "src/app.mjs",
   "src/scoring.mjs",
   "src/data.mjs",
+  "src/memory-data.mjs",
+  "server/api.mjs",
+  "server/memory-store.mjs",
+  "server/mongo-store.mjs",
   "tests/scoring.test.mjs",
   "tests/summary.test.mjs",
   "tests/announcement.test.mjs",
+  "tests/api.test.mjs",
+  "tests/memory-store.test.mjs",
   ".kiro/specs/community-eventops/requirements.md",
   ".kiro/specs/community-eventops/design.md",
   ".kiro/specs/community-eventops/tasks.md",
   ".kiro/specs/announcement-coordination/requirements.md",
   ".kiro/specs/announcement-coordination/design.md",
   ".kiro/specs/announcement-coordination/tasks.md",
+  ".kiro/specs/mongodb-community-memory/requirements.md",
+  ".kiro/specs/mongodb-community-memory/design.md",
+  ".kiro/specs/mongodb-community-memory/tasks.md",
+  "mongodb/atlas-search-index.json",
+  "docs/mongodb-workshop-runbook.md",
   "docs/announcement-coordination-feedback.md",
   "docs/kiro-product-feedback.md",
   ".kiro/steering/product.md",
@@ -68,6 +79,20 @@ const html = await readFile(join(root, "index.html"), "utf8");
 if (!html.toLowerCase().includes("synthetic")) failures.push("The interface must label synthetic data.");
 if (!html.includes('aria-live="polite"')) failures.push("The interface needs an ARIA live status region.");
 if (!html.includes('id="queue-summary"')) failures.push("The interface is missing the #queue-summary live region (R8).");
+if (!html.includes('id="community-memory"')) failures.push("The interface is missing the community-memory search experience.");
+
+const mongoSource = await readFile(join(root, "server/mongo-store.mjs"), "utf8");
+for (const marker of ["MongoClient", "$facet", "$search", "$text", "decision_audit"]) {
+  if (!mongoSource.includes(marker)) failures.push(`MongoDB store is missing evidence marker: ${marker}`);
+}
+
+const mongoRequirements = await readFile(
+  join(root, ".kiro/specs/mongodb-community-memory/requirements.md"),
+  "utf8",
+);
+for (const marker of ["MC1", "MC2", "MC3", "MC4", "MC5", "MC6", "MC7", "MC8"]) {
+  if (!mongoRequirements.includes(marker)) failures.push(`MongoDB requirements are missing: ${marker}`);
+}
 
 if (failures.length) {
   console.error("Validation failed:\n" + failures.map((failure) => `- ${failure}`).join("\n"));

@@ -1,4 +1,5 @@
 import { seedApplications } from "./data.mjs";
+import { seedMemories } from "./memory-data.mjs";
 import {
   RULE_VERSION,
   summarizeApplications,
@@ -22,6 +23,12 @@ const elements = {
   exportButton: document.querySelector("#export-button"),
   toast: document.querySelector("#toast"),
   queueSummary: document.querySelector("#queue-summary"),
+  dataMode: document.querySelector("#data-mode"),
+  searchMode: document.querySelector("#search-mode"),
+  memoryForm: document.querySelector("#memory-form"),
+  memoryQuery: document.querySelector("#memory-query"),
+  memoryMeta: document.querySelector("#memory-meta"),
+  memoryResults: document.querySelector("#memory-results"),
   metrics: {
     total: document.querySelector("#metric-total"),
     invite: document.querySelector("#metric-invite"),
@@ -34,7 +41,50 @@ let state = {
   applications: loadApplications(),
   filter: "All",
   search: "",
+  backendAvailable: false,
+  storageMode: "browser-local",
+  searchMode: "local-token-search",
 };
+
+async function apiRequest(path, options = {}) {
+  const response = await fetch(path, {
+    ...options,
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.error || `Request failed (${response.status})`);
+  }
+  return response.json();
+}
+
+function updateDataMode() {
+  const label =
+    state.storageMode === "mongodb"
+      ? "MONGODB LIVE"
+      : state.backendAvailable
+        ? "IN-MEMORY API"
+        : "BROWSER-LOCAL DEMO";
+  elements.dataMode.lastChild.textContent = ` ${label}`;
+  elements.searchMode.textContent = state.searchMode.replaceAll("-", " ").toUpperCase();
+}
+
+async function connectBackend() {
+  try {
+    const status = await apiRequest("/api/status");
+    state.backendAvailable = true;
+    state.storageMode = status.mode;
+    state.searchMode = status.searchMode;
+    state.applications = await apiRequest("/api/applications");
+  } catch {
+    state.backendAvailable = false;
+    state.storageMode = "browser-local";
+    state.searchMode = "local-token-search";
+  }
+  updateDataMode();
+  render();
+  await searchCommunityMemory("");
+}
 
 function loadApplications() {
   try {
@@ -47,7 +97,7 @@ function loadApplications() {
 }
 
 function persistApplications() {
-  localStorage.setItem(storageKey, JSON.stringify(state.applications));
+  if (!state.backendAvailable) localStorage.setItem(storageKey, JSON.stringify(state.applications));
 }
 
 function escapeHtml(value) {
@@ -135,14 +185,31 @@ function render() {
   });
 }
 
-function handleDecisionChange(event) {
+async function handleDecisionChange(event) {
   const id = event.currentTarget.dataset.decisionId;
-  state.applications = state.applications.map((application) =>
-    application.id === id ? { ...application, manualDecision: event.currentTarget.value } : application,
-  );
-  persistApplications();
-  render();
-  showToast(event.currentTarget.value ? "Organizer decision recorded." : "Recommendation restored as final decision.");
+  const manualDecision = event.currentTarget.value;
+  try {
+    if (state.backendAvailable) {
+      const result = await apiRequest(`/api/applications/${encodeURIComponent(id)}/decision`, {
+        method: "PATCH",
+        body: JSON.stringify({ manualDecision, reason: "Decision changed in the Community Memory review desk" }),
+      });
+      state.applications = state.applications.map((application) =>
+        application.id === id ? result.application : application,
+      );
+    } else {
+      state.applications = state.applications.map((application) =>
+        application.id === id
+          ? { ...application, manualDecision, finalDecision: manualDecision || application.recommendation }
+          : application,
+      );
+      persistApplications();
+    }
+    render();
+    showToast(manualDecision ? "Organizer decision recorded with an audit event." : "Recommendation restored as final decision.");
+  } catch (error) {
+    showToast(`Decision was not saved: ${error.message}`);
+  }
 }
 
 function resetFilters() {
@@ -153,7 +220,7 @@ function resetFilters() {
   render();
 }
 
-function handleFormSubmit(event) {
+async function handleFormSubmit(event) {
   event.preventDefault();
   const data = new FormData(event.currentTarget);
   const application = {
@@ -169,12 +236,72 @@ function handleFormSubmit(event) {
     manualDecision: "",
   };
 
-  state.applications = [...state.applications, application];
-  persistApplications();
-  event.currentTarget.reset();
-  resetFilters();
-  document.querySelector("#application-queue").scrollIntoView({ behavior: "smooth" });
-  showToast("Synthetic application scored locally. No packets left the browser.");
+  try {
+    if (state.backendAvailable) {
+      const created = await apiRequest("/api/applications", {
+        method: "POST",
+        body: JSON.stringify({ ...application, dataClassification: "synthetic-demo" }),
+      });
+      state.applications = [...state.applications, created];
+    } else {
+      state.applications = [...state.applications, application];
+      persistApplications();
+    }
+    event.currentTarget.reset();
+    resetFilters();
+    document.querySelector("#application-queue").scrollIntoView({ behavior: "smooth" });
+    showToast(
+      state.storageMode === "mongodb"
+        ? "Synthetic application scored and stored in MongoDB."
+        : "Synthetic application scored in demo mode.",
+    );
+  } catch (error) {
+    showToast(`Application was not saved: ${error.message}`);
+  }
+}
+
+function localMemorySearch(query) {
+  const terms = String(query || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return seedMemories.filter((memory) => {
+    const haystack = [memory.event, memory.city, memory.title, memory.summary, ...(memory.takeaways || []), ...(memory.tags || [])]
+      .join(" ")
+      .toLowerCase();
+    return terms.every((term) => haystack.includes(term));
+  });
+}
+
+function renderMemories(memories) {
+  elements.memoryResults.innerHTML = memories
+    .map(
+      (memory) => `
+        <article class="memory-card">
+          <div class="memory-kicker"><span>${escapeHtml(memory.city)}</span><span>${escapeHtml(memory.event)}</span></div>
+          <h3>${escapeHtml(memory.title)}</h3>
+          <p>${escapeHtml(memory.summary)}</p>
+          <ul>${(memory.takeaways || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          <div class="memory-tags">${(memory.tags || []).map((tag) => `<span>#${escapeHtml(tag)}</span>`).join("")}</div>
+        </article>`,
+    )
+    .join("");
+  elements.memoryMeta.textContent = memories.length
+    ? `${memories.length} synthetic memories · ${state.searchMode.replaceAll("-", " ")}`
+    : "No synthetic memories matched. Try a broader query.";
+}
+
+async function searchCommunityMemory(query) {
+  try {
+    if (state.backendAvailable) {
+      const response = await apiRequest(`/api/memory/search?q=${encodeURIComponent(query)}`);
+      state.searchMode = response.searchMode;
+      updateDataMode();
+      renderMemories(response.results);
+    } else {
+      renderMemories(localMemorySearch(query));
+    }
+  } catch (error) {
+    renderMemories([]);
+    elements.memoryMeta.textContent = `Memory search unavailable: ${error.message}`;
+  }
 }
 
 function exportEvidence() {
@@ -295,8 +422,16 @@ elements.filters.forEach((button) => {
 
 elements.resetFilters.addEventListener("click", resetFilters);
 elements.form.addEventListener("submit", handleFormSubmit);
+elements.memoryForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  searchCommunityMemory(elements.memoryQuery.value);
+});
 elements.exportButton.addEventListener("click", exportEvidence);
 elements.resetData.addEventListener("click", () => {
+  if (state.backendAvailable) {
+    showToast("Server-backed demo data is reset with the seed command, not from the browser.");
+    return;
+  }
   state.applications = structuredClone(seedApplications);
   localStorage.removeItem(storageKey);
   resetFilters();
@@ -304,4 +439,5 @@ elements.resetData.addEventListener("click", () => {
 });
 
 render();
+connectBackend();
 
