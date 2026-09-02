@@ -18,7 +18,9 @@ export class MongoEventStore {
     this.searchMode = "atlas-search";
     this.client = new MongoClient(uri, {
       appName: "eventops-community-memory",
-      serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true },
+      // Atlas Search is preferred, while the portable text-index fallback is
+      // outside Stable API strict mode. Keep API versioning without rejecting it.
+      serverApi: { version: ServerApiVersion.v1, strict: false, deprecationErrors: true },
       serverSelectionTimeoutMS: 5000,
     });
   }

@@ -1,6 +1,9 @@
+import { existsSync } from "node:fs";
 import { MongoEventStore } from "../server/mongo-store.mjs";
 import { seedApplications } from "../src/data.mjs";
 import { seedMemories } from "../src/memory-data.mjs";
+
+if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 if (!process.env.MONGODB_URI) {
   console.error("Set MONGODB_URI before running pnpm seed:mongo.");

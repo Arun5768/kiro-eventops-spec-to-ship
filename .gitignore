@@ -1,5 +1,6 @@
 .DS_Store
 node_modules/
+.env.local
 coverage/
 *.log
 cloudflare-upload/

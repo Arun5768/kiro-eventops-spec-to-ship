@@ -1,4 +1,4 @@
-import { createReadStream } from "node:fs";
+import { createReadStream, existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
@@ -7,6 +7,8 @@ import { MemoryEventStore } from "./server/memory-store.mjs";
 import { MongoEventStore } from "./server/mongo-store.mjs";
 import { seedApplications } from "./src/data.mjs";
 import { seedMemories } from "./src/memory-data.mjs";
+
+if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 const root = new URL(".", import.meta.url).pathname.replace(/^\/(.:\/)/, "$1");
 const port = Number(process.env.PORT || process.argv[2]) || 4173;
