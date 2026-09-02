@@ -1,10 +1,10 @@
 # EventOps Triage Lab
 
-An explainable, privacy-safe event application triage dashboard built as a Kiro **Spec-to-Ship** proof project.
+An explainable, privacy-safe event application triage dashboard built with Kiro's **Spec-to-Ship** workflow.
 
 **Live demo:** https://kiro-eventops-spec-to-ship.pages.dev/
 
-The project turns a fuzzy community-operations problem into inspectable artifacts:
+The project turns a fuzzy community-operations problem into a reviewable implementation trail:
 
 - `.kiro/specs/community-eventops/requirements.md` — user stories and acceptance criteria
 - `.kiro/specs/community-eventops/design.md` — architecture, data boundaries, and failure handling
@@ -54,6 +54,6 @@ The accessibility iteration was completed in an authenticated Kiro CLI session a
 
 All included names and applications are synthetic. The app stores changes only in the current browser's local storage. It is a workflow demonstration, not a production admissions or hiring system.
 
-## Why this fits Kiro
+## Why Kiro was useful here
 
-The useful part is not “AI generated a dashboard.” The useful part is that the intent, acceptance criteria, architecture, constraints, implementation tasks, verification, and reusable agent guidance all remain reviewable in the repository.
+The requirements, architecture, constraints, implementation tasks, verification steps, and reusable project guidance remain visible in the repository. That makes the reasoning behind each decision easier for another maintainer to inspect and continue.
