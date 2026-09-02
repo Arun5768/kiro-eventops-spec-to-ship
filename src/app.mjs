@@ -1,5 +1,11 @@
 import { seedApplications } from "./data.mjs";
-import { RULE_VERSION, summarizeApplications, computeFilterSummary } from "./scoring.mjs";
+import {
+  RULE_VERSION,
+  summarizeApplications,
+  computeFilterSummary,
+  scheduleAnnouncement,
+  PRIORITY_SUMMARY,
+} from "./scoring.mjs";
 
 const storageKey = "eventops-demo-applications-v1";
 const decisionOptions = ["Invite", "Review", "Waitlist"];
@@ -203,11 +209,29 @@ function exportEvidence() {
 
 let toastTimer;
 function showToast(message) {
+  // Record the timestamp so updateQueueSummary can suppress any summary that
+  // fires within SUMMARY_SUPPRESSION_MS of this action announcement.
+  lastActionTimestamp = Date.now();
   clearTimeout(toastTimer);
   elements.toast.textContent = message;
   elements.toast.classList.add("is-visible");
   toastTimer = setTimeout(() => elements.toast.classList.remove("is-visible"), 3200);
 }
+
+// ---------------------------------------------------------------------------
+// Announcement coordinator state
+// ---------------------------------------------------------------------------
+// Tracks when the most recent action-priority (toast) announcement fired so
+// that updateQueueSummary can suppress a competing polite announcement within
+// the SUMMARY_SUPPRESSION_MS window defined in scoring.mjs.
+let lastActionTimestamp = 0;
+
+// Tracks the last text successfully written to #queue-summary so identical
+// consecutive summaries are not re-announced on re-renders that produce no
+// visible state change.
+let lastSummaryText = "";
+
+// ---------------------------------------------------------------------------
 
 // Debounce helper: delays fn by ms after the last call, preventing rapid-fire
 // announcements to screen readers while the user types in the search box.
@@ -219,7 +243,8 @@ function debounce(fn, ms) {
   };
 }
 
-// Write the queue summary into the ARIA live region.
+// Write the queue summary into the ARIA live region — but only if the
+// coordinator determines the message should be delivered right now.
 // Called through a debounced wrapper so keystrokes don't produce a new
 // announcement on every character — only after typing pauses.
 function updateQueueSummary(visibleCount, metrics) {
@@ -230,6 +255,18 @@ function updateQueueSummary(visibleCount, metrics) {
     decisions: metrics.decisions,
     overrides: metrics.overrides,
   });
+
+  const decision = scheduleAnnouncement({
+    message: text,
+    priority: PRIORITY_SUMMARY,
+    lastActionTimestamp,
+    now: Date.now(),
+    lastDeliveredText: lastSummaryText,
+  });
+
+  if (decision.action !== "deliver") return;
+
+  lastSummaryText = text;
 
   // Clear then set in the same microtask so AT always sees a fresh update,
   // even when the text is identical (e.g., resetting to the same filter).

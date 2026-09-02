@@ -10,9 +10,15 @@ const requiredFiles = [
   "src/data.mjs",
   "tests/scoring.test.mjs",
   "tests/summary.test.mjs",
+  "tests/announcement.test.mjs",
   ".kiro/specs/community-eventops/requirements.md",
   ".kiro/specs/community-eventops/design.md",
   ".kiro/specs/community-eventops/tasks.md",
+  ".kiro/specs/announcement-coordination/requirements.md",
+  ".kiro/specs/announcement-coordination/design.md",
+  ".kiro/specs/announcement-coordination/tasks.md",
+  "docs/announcement-coordination-feedback.md",
+  "docs/kiro-product-feedback.md",
   ".kiro/steering/product.md",
   ".kiro/steering/tech.md",
   ".kiro/steering/structure.md",
@@ -44,6 +50,18 @@ for (const field of ["$schema", "name", "version", "description", "author", "key
 const requirements = await readFile(join(root, ".kiro/specs/community-eventops/requirements.md"), "utf8");
 for (const marker of ["## User stories", "Acceptance criteria", "## Non-goals", "## Success measures", "R8"]) {
   if (!requirements.includes(marker)) failures.push(`Requirements are missing: ${marker}`);
+}
+
+const announcementReqs = await readFile(join(root, ".kiro/specs/announcement-coordination/requirements.md"), "utf8");
+for (const marker of ["AC1", "AC2", "AC3", "AC4", "AC5", "scheduleAnnouncement", "SUMMARY_SUPPRESSION_MS"]) {
+  if (!announcementReqs.includes(marker))
+    failures.push(`Announcement-coordination requirements are missing: ${marker}`);
+}
+
+const scoringSource = await readFile(join(root, "src/scoring.mjs"), "utf8");
+for (const exportName of ["scheduleAnnouncement", "PRIORITY_ACTION", "PRIORITY_SUMMARY", "SUMMARY_SUPPRESSION_MS"]) {
+  if (!scoringSource.includes(`export`) || !scoringSource.includes(exportName))
+    failures.push(`src/scoring.mjs is missing export: ${exportName}`);
 }
 
 const html = await readFile(join(root, "index.html"), "utf8");

@@ -9,6 +9,9 @@ The project turns a fuzzy community-operations problem into a reviewable impleme
 - `.kiro/specs/community-eventops/requirements.md` — user stories and acceptance criteria
 - `.kiro/specs/community-eventops/design.md` — architecture, data boundaries, and failure handling
 - `.kiro/specs/community-eventops/tasks.md` — implementation checklist and verification record
+- `.kiro/specs/announcement-coordination/requirements.md` — bugfix spec: competing live-region announcements
+- `.kiro/specs/announcement-coordination/design.md` — root-cause analysis and coordinator architecture
+- `.kiro/specs/announcement-coordination/tasks.md` — implementation checklist and verification record
 - `.kiro/steering/` — product, technology, and structure guidance for Kiro
 - `.kiro/hooks/verify-on-save.json` — automatic verification after JavaScript changes
 - `community-eventops-power/` — a reusable, skills-only Kiro Power
@@ -19,7 +22,7 @@ The project turns a fuzzy community-operations problem into a reviewable impleme
 - Separates `Invite`, `Review`, and `Waitlist` decisions
 - Shows the exact reasons behind every score
 - Allows manual decisions without hiding the automated recommendation
-- Gives screen-reader users a debounced live summary of the active queue view
+- Gives screen-reader users a debounced live summary of the active queue view, coordinated with action confirmations so only one polite announcement fires per user action
 - Adds synthetic applications locally and never sends them to a server
 - Exports an evidence snapshot as JSON
 
@@ -44,11 +47,15 @@ node --test
 node scripts/validate.mjs
 ```
 
-Current result: **17 tests passed** and **16 project artifacts verified**.
+Current result: **29 tests passed** and **22 project artifacts verified**.
 
 ## Kiro workflow evidence
 
 The accessibility iteration was completed in an authenticated Kiro CLI session after it read the project's steering and spec files. The requirement, design decision, task, implementation, tests, browser check, strength, and observed friction are recorded in [`docs/kiro-run-notes.md`](docs/kiro-run-notes.md).
+
+The competing-announcement bugfix (identified as friction in the first session) was then executed as a full spec-to-ship cycle: requirements, design, tasks, implementation, regression tests, and verification are in `.kiro/specs/announcement-coordination/` and [`docs/announcement-coordination-feedback.md`](docs/announcement-coordination-feedback.md).
+
+Two concrete Kiro product observations from these sessions—including the CLI v3 permission-mode mismatch and a resumable rate-limit interruption—are recorded in [`docs/kiro-product-feedback.md`](docs/kiro-product-feedback.md).
 
 ## Data boundary
 

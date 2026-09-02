@@ -140,6 +140,70 @@ export function summarizeApplications(applications = []) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Announcement coordinator — pure scheduling logic (no DOM access)
+// ---------------------------------------------------------------------------
+
+/** Priority level for visible user-action confirmations (toast messages). */
+export const PRIORITY_ACTION = "action";
+
+/** Priority level for background queue-state summaries. */
+export const PRIORITY_SUMMARY = "summary";
+
+/**
+ * Milliseconds after a PRIORITY_ACTION announcement during which a
+ * PRIORITY_SUMMARY announcement is suppressed.
+ *
+ * Set to 200 ms beyond the 400 ms debounce so any summary that was already
+ * queued before the action fired is also caught.
+ */
+export const SUMMARY_SUPPRESSION_MS = 600;
+
+/**
+ * Decides whether an announcement should be delivered, suppressed, or
+ * deduplicated. Pure function — no side effects, no DOM access.
+ *
+ * @param {object} params
+ * @param {string} params.message              - The text to announce.
+ * @param {string} params.priority             - PRIORITY_ACTION or PRIORITY_SUMMARY.
+ * @param {number} params.lastActionTimestamp  - ms-epoch of the most recent action announcement (0 if none).
+ * @param {number} params.now                  - Current ms-epoch timestamp.
+ * @param {string} params.lastDeliveredText    - Last text successfully written to the summary region.
+ * @returns {{ action: "deliver"|"suppress"|"deduplicate", message: string }}
+ */
+export function scheduleAnnouncement({ message, priority, lastActionTimestamp, now, lastDeliveredText }) {
+  const safeNow = Number.isFinite(now) && now >= 0 ? now : 0;
+  const safeLastAction = Number.isFinite(lastActionTimestamp) && lastActionTimestamp > 0 ? lastActionTimestamp : 0;
+  const safeMessage = typeof message === "string" ? message : "";
+  const safeLastDelivered = typeof lastDeliveredText === "string" ? lastDeliveredText : "";
+
+  // Action-priority messages always deliver — they are the toast and take no
+  // guard from the summary suppression window.
+  if (priority === PRIORITY_ACTION) {
+    return { action: "deliver", message: safeMessage };
+  }
+
+  // 0 is the sentinel meaning "no action has ever fired". Never suppress in
+  // that case regardless of how small now is (e.g. synthetic test timestamps).
+  // elapsed === 0 means the action and the summary share the exact same
+  // timestamp — this is a genuine same-moment action and must suppress.
+  // Negative elapsed means now < lastAction (clock inversion); do not suppress.
+  const elapsed = safeLastAction === 0 ? Infinity : safeNow - safeLastAction;
+  if (elapsed >= 0 && elapsed < SUMMARY_SUPPRESSION_MS) {
+    return { action: "suppress", message: safeMessage };
+  }
+
+  // Skip re-announcing identical consecutive text so a filter reset to the
+  // same state does not produce a redundant announcement.
+  if (safeMessage === safeLastDelivered) {
+    return { action: "deduplicate", message: safeMessage };
+  }
+
+  return { action: "deliver", message: safeMessage };
+}
+
+// ---------------------------------------------------------------------------
+
 /**
  * Returns a concise, screen-reader-friendly summary of the current queue view.
  * Pure function: no DOM access, no side effects.
