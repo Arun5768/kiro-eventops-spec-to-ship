@@ -157,7 +157,7 @@ Passed with no whitespace errors.
 | Timer ordering: `NaN` `now` → clock inversion → delivers | AC5-4 |
 | Timer ordering: `now` < `lastActionTimestamp` → clock inversion → delivers | AC5-4 |
 
-**Browser interaction status:** pending deployment of this iteration. This note does not claim a real screen-reader test; it records code-level and DOM-level verification separately.
+**Deployed browser interaction check:** passed on the Cloudflare Pages build. A manual decision change produced the visible "Organizer decision recorded." toast while `#queue-summary` stayed unchanged immediately and after 500 ms. After the suppression window, searching for Bhopal produced one settled summary reporting two visible applications. No console errors were recorded. This is DOM-level evidence; it is not presented as a real screen-reader test.
 
 **Data boundary:** only the repository's synthetic applicant records were used.
 No real applicant, patient, client, partner, financial, or confidential data

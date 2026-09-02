@@ -42,4 +42,4 @@
 - [x] Run `node --test` — all tests pass (including 12 coordinator regression tests).
 - [x] Run `node scripts/validate.mjs` — all artifacts verified.
 - [x] Run `git diff --check` — no whitespace errors.
-- [ ] Run the browser interaction check for override suppression and settled-search delivery after deployment.
+- [x] Run the deployed browser interaction check: the action toast appeared immediately, the queue summary stayed unchanged through the 500 ms suppression check, a later Bhopal search produced one settled two-result summary, and no console errors were recorded.
